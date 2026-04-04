@@ -1,14 +1,28 @@
 import express from "express";
-import { login, logout, register, updateProfile } from "../controllers/user.controller.js";
+import { 
+    forgotPassword, 
+    login, 
+    logout, 
+    register, 
+    resetPassword, 
+    updateProfile, 
+    verifyOtp, 
+    resendOtp 
+} from "../controllers/user.controller.js";
 import isAuthenticated from "../middlewares/isAuthenticated.js";
 import { singleUpload } from "../middlewares/mutler.js";
  
 const router = express.Router();
 
-router.route("/register").post(singleUpload,register);
+router.route("/register").post(singleUpload, register);
 router.route("/login").post(login);
 router.route("/logout").get(logout);
-router.route("/profile/update").post(isAuthenticated,singleUpload,updateProfile);
+router.route("/profile/update").post(isAuthenticated, singleUpload, updateProfile);
+router.route("/forgot-password").post(forgotPassword);
+router.route("/reset-password/:token").post(resetPassword);
+
+// OTP Verification
+router.route("/verify-otp").post(verifyOtp);
+router.route("/resend-otp").post(resendOtp);
 
 export default router;
-

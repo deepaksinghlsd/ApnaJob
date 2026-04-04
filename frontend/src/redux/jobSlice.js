@@ -9,9 +9,9 @@ const jobSlice = createSlice({
         searchJobByText:"",
         allAppliedJobs:[],
         searchedQuery:"",
+        externalJobs:[], // New field for Tavily search results
     },
     reducers:{
-        // actions
         setAllJobs:(state,action) => {
             state.allJobs = action.payload;
         },
@@ -29,15 +29,29 @@ const jobSlice = createSlice({
         },
         setSearchedQuery:(state,action) => {
             state.searchedQuery = action.payload;
+        },
+        setExternalJobs:(state,action) => {
+            state.externalJobs = action.payload;
+        },
+        updateExternalJob:(state,action) => {
+            // Used for updating match scores etc.
+            const index = state.externalJobs.findIndex(j => j.url === action.payload.url);
+            if (index !== -1) {
+                state.externalJobs[index] = { ...state.externalJobs[index], ...action.payload };
+            }
         }
     }
 });
+
 export const {
     setAllJobs, 
     setSingleJob, 
     setAllAdminJobs,
     setSearchJobByText, 
     setAllAppliedJobs,
-    setSearchedQuery
+    setSearchedQuery,
+    setExternalJobs,
+    updateExternalJob
 } = jobSlice.actions;
+
 export default jobSlice.reducer;

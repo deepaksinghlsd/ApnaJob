@@ -1,6 +1,4 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import Login from './components/auth/Login'
-import Signup from './components/auth/Signup'
 import Home from './components/Home'
 import Jobs from './components/Jobs'
 import Browse from './components/Browse'
@@ -13,66 +11,79 @@ import AdminJobs from "./components/admin/AdminJobs";
 import PostJob from './components/admin/PostJob'
 import Applicants from './components/admin/Applicants'
 import ProtectedRoute from './components/admin/ProtectedRoute'
+import ForgotPassword from './components/auth/ForgotPassword'
+import ResetPassword from './components/auth/ResetPassword'
+import AuthModal from './components/auth/AuthModal'
+import GlobalJobSearch from './components/GlobalJobSearch'
 
+const Layout = ({ children }) => (
+  <>
+    {children}
+    <AuthModal />
+  </>
+);
 
 const appRouter = createBrowserRouter([
   {
     path: '/',
-    element: <Home />
-  },
-  {
-    path: '/login',
-    element: <Login />
-  },
-  {
-    path: '/signup',
-    element: <Signup />
+    element: <Layout><Home /></Layout>
   },
   {
     path: "/jobs",
-    element: <Jobs />
+    element: <Layout><Jobs /></Layout>
   },
   {
     path: "/description/:id",
-    element: <JobDescription />
+    element: <Layout><JobDescription /></Layout>
   },
   {
     path: "/browse",
-    element: <Browse />
+    element: <Layout><Browse /></Layout>
   },
   {
     path: "/profile",
-    element: <Profile />
+    element: <Layout><Profile /></Layout>
+  },
+  {
+    path: "/global-search",
+    element: <Layout><GlobalJobSearch /></Layout>
+  },
+  {
+    path: "/forgot-password",
+    element: <Layout><ForgotPassword /></Layout>
+  },
+  {
+    path: "/reset-password/:token",
+    element: <Layout><ResetPassword /></Layout>
   },
   // admin ke liye yha se start hoga
   {
     path:"/admin/companies",
-    element: <ProtectedRoute><Companies/></ProtectedRoute>
+    element: <ProtectedRoute><Layout><Companies/></Layout></ProtectedRoute>
   },
   {
     path:"/admin/companies/create",
-    element: <ProtectedRoute><CompanyCreate/></ProtectedRoute> 
+    element: <ProtectedRoute><Layout><CompanyCreate/></Layout></ProtectedRoute> 
   },
   {
     path:"/admin/companies/:id",
-    element:<ProtectedRoute><CompanySetup/></ProtectedRoute> 
+    element:<ProtectedRoute><Layout><CompanySetup/></Layout></ProtectedRoute> 
   },
   {
     path:"/admin/jobs",
-    element:<ProtectedRoute><AdminJobs/></ProtectedRoute> 
+    element:<ProtectedRoute><Layout><AdminJobs/></Layout></ProtectedRoute> 
   },
   {
     path:"/admin/jobs/create",
-    element:<ProtectedRoute><PostJob/></ProtectedRoute> 
+    element:<ProtectedRoute><Layout><PostJob/></Layout></ProtectedRoute> 
   },
   {
     path:"/admin/jobs/:id/applicants",
-    element:<ProtectedRoute><Applicants/></ProtectedRoute> 
+    element:<ProtectedRoute><Layout><Applicants/></Layout></ProtectedRoute> 
   },
-
 ])
-function App() {
 
+function App() {
   return (
     <div>
       <RouterProvider router={appRouter} />

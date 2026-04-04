@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from 'react'
-import Navbar from '../shared/Navbar'
-import { Label } from '../ui/label'
-import { Input } from '../ui/input'
-import { RadioGroup } from '../ui/radio-group'
-import { Button } from '../ui/button'
-import { Link, useNavigate } from 'react-router-dom'
-import axios from 'axios'
-import { USER_API_END_POINT } from '@/utils/constant'
-import { toast } from 'sonner'
-import { useDispatch, useSelector } from 'react-redux'
-import { setLoading, setUser } from '@/redux/authSlice'
-import { Loader2 } from 'lucide-react'
+import React, { useEffect, useState } from 'react';
+import Navbar from '../shared/Navbar';
+import { Label } from '../ui/label';
+import { Input } from '../ui/input';
+import { RadioGroup } from '../ui/radio-group';
+import { Button } from '../ui/button';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { USER_API_END_POINT } from '@/utils/constant';
+import { toast } from 'sonner';
+import { useDispatch, useSelector } from 'react-redux';
+import { setLoading, setUser } from '@/redux/authSlice';
+import { Loader2 } from 'lucide-react';
 
 const Login = () => {
     const [input, setInput] = useState({
@@ -18,13 +18,13 @@ const Login = () => {
         password: "",
         role: "",
     });
-    const { loading,user } = useSelector(store => store.auth);
+    const { loading, user } = useSelector(store => store.auth);
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
     const changeEventHandler = (e) => {
         setInput({ ...input, [e.target.name]: e.target.value });
-    }
+    };
 
     const submitHandler = async (e) => {
         e.preventDefault();
@@ -43,23 +43,29 @@ const Login = () => {
             }
         } catch (error) {
             console.log(error);
-            toast.error(error.response.data.message);
+            toast.error(error.response?.data?.message || "Login failed");
         } finally {
             dispatch(setLoading(false));
         }
-    }
-    useEffect(()=>{
-        if(user){
+    };
+
+    useEffect(() => {
+        if (user) {
             navigate("/");
         }
-    },[])
+    }, [user]);
+
     return (
-        <div>
+        <div className="flex flex-col min-h-screen bg-gray-100">
             <Navbar />
-            <div className='flex items-center justify-center max-w-7xl mx-auto'>
-                <form onSubmit={submitHandler} className='w-1/2 border border-gray-200 rounded-md p-4 my-10'>
-                    <h1 className='font-bold text-xl mb-5'>Login</h1>
-                    <div className='my-2'>
+            <div className="flex flex-1 items-center justify-center px-4">
+                <form 
+                    onSubmit={submitHandler} 
+                    className="w-full max-w-md bg-white shadow-md rounded-lg p-6"
+                >
+                    <h1 className="font-bold text-2xl text-center mb-5">Login</h1>
+                    
+                    <div className="my-3">
                         <Label>Email</Label>
                         <Input
                             type="email"
@@ -70,7 +76,7 @@ const Login = () => {
                         />
                     </div>
 
-                    <div className='my-2'>
+                    <div className="my-3">
                         <Label>Password</Label>
                         <Input
                             type="password"
@@ -80,8 +86,9 @@ const Login = () => {
                             placeholder="Enter password"
                         />
                     </div>
-                    <div className='flex items-center justify-between'>
-                        <RadioGroup className="flex items-center gap-4 my-5">
+
+                    <div className="flex items-center justify-between my-4">
+                        <RadioGroup className="flex items-center gap-4">
                             <div className="flex items-center space-x-2">
                                 <Input
                                     type="radio"
@@ -91,7 +98,7 @@ const Login = () => {
                                     onChange={changeEventHandler}
                                     className="cursor-pointer"
                                 />
-                                <Label htmlFor="r1">Student</Label>
+                                <Label>Student</Label>
                             </div>
                             <div className="flex items-center space-x-2">
                                 <Input
@@ -102,18 +109,28 @@ const Login = () => {
                                     onChange={changeEventHandler}
                                     className="cursor-pointer"
                                 />
-                                <Label htmlFor="r2">Recruiter</Label>
+                                <Label>Recruiter</Label>
                             </div>
                         </RadioGroup>
                     </div>
+
                     {
-                        loading ? <Button className="w-full my-4"> <Loader2 className='mr-2 h-4 w-4 animate-spin' /> Please wait </Button> : <Button type="submit" className="w-full my-4">Login</Button>
+                        loading ? (
+                            <Button className="w-full my-4">
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Please wait
+                            </Button>
+                        ) : (
+                            <Button type="submit" className="w-full my-4">Login</Button>
+                        )
                     }
-                    <span className='text-sm'>Don't have an account? <Link to="/signup" className='text-blue-600'>Signup</Link></span>
+
+                    <p className="text-sm text-center">
+                        Don't have an account? <Link to="/signup" className="text-blue-600">Signup</Link>
+                    </p>
                 </form>
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default Login
+export default Login;

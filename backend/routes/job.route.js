@@ -1,6 +1,13 @@
 import express from "express";
 import isAuthenticated from "../middlewares/isAuthenticated.js";
-import { getAdminJobs, getAllJobs, getJobById, postJob } from "../controllers/job.controller.js";
+import { 
+    getAdminJobs, 
+    getAllJobs, 
+    getJobById, 
+    postJob, 
+    searchExternalJobs, 
+    matchExternalJobs 
+} from "../controllers/job.controller.js";
 
 const router = express.Router();
 
@@ -9,5 +16,8 @@ router.route("/get").get(getAllJobs);
 router.route("/getadminjobs").get(isAuthenticated, getAdminJobs);
 router.route("/get/:id").get(getJobById);
 
-export default router;
+// External Job Search (Tavily)
+router.route("/external/search").post(isAuthenticated, searchExternalJobs);
+router.route("/external/match").post(isAuthenticated, matchExternalJobs);
 
+export default router;
