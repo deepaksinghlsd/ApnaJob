@@ -4,6 +4,7 @@ import {
     getAdminJobs, 
     getAllJobs, 
     getJobById, 
+    getJobFilters,
     postJob, 
     searchExternalJobs, 
     matchExternalJobs 
@@ -13,6 +14,7 @@ const router = express.Router();
 
 router.route("/post").post(isAuthenticated, postJob);
 router.route("/get").get(getAllJobs);
+router.route("/get/filters").get(getJobFilters);
 router.route("/getadminjobs").get(isAuthenticated, getAdminJobs);
 router.route("/get/:id").get(getJobById);
 

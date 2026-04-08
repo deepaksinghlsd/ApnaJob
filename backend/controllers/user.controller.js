@@ -177,15 +177,6 @@ export const login = async (req, res) => {
       });
     }
 
-    // Check if email is verified
-    if (!user.isVerified) {
-        return res.status(403).json({
-            message: "Please verify your email before logging in.",
-            success: false,
-            notVerified: true // Hint for frontend to show OTP screen
-        });
-    }
-
     const tokenData = {
       userId: user._id,
     };

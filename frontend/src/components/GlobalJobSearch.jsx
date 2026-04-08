@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react'
 import Navbar from './shared/Navbar'
 import { Input } from './ui/input'
 import { Button } from './ui/button'
-import { Search, MapPin, Sparkles, Loader2, Filter, X, ArrowUpRight, Save, Database, Info } from 'lucide-react'
+import { Search, MapPin, Sparkles, Loader2, Filter, X, ArrowUpRight, Save, Database, Info, Globe, ChevronDown, Plus, Building2 } from 'lucide-react'
 import { useDispatch, useSelector } from 'react-redux'
 import axios from 'axios'
 import { JOB_API_END_POINT } from '@/utils/constant'
@@ -12,19 +12,55 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { clearExternalJobsCache, getCachedExternalJobs, saveExternalJobs } from '@/utils/db'
 import { toast } from 'sonner'
 import { openModal } from '@/redux/authModalSlice'
+import countryCitiesData from '@/data/countryCities.json'
 
 const GlobalJobSearch = () => {
     const [keyword, setKeyword] = useState("");
-    const [location, setLocation] = useState("India");
+    const [selectedCountry, setSelectedCountry] = useState("India");
+    const [selectedCity, setSelectedCity] = useState("");
+    const [customCity, setCustomCity] = useState("");
+    const [showCustomInput, setShowCustomInput] = useState(false);
+    const [showCountryDropdown, setShowCountryDropdown] = useState(false);
+    const [showCityDropdown, setShowCityDropdown] = useState(false);
     const [loading, setLoading] = useState(false);
     const [matchingLoading, setMatchingLoading] = useState(false);
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
-    const [useCached, setUseCached] = useState(true);
 
     const { externalJobs = [] } = useSelector(store => store.job);
     const { user } = useSelector(store => store.auth);
     const dispatch = useDispatch();
+
+    const countryDropdownRef = useRef(null);
+    const cityDropdownRef = useRef(null);
+
+    const countries = Object.keys(countryCitiesData);
+    const cities = countryCitiesData[selectedCountry] || [];
+
+    // Close dropdowns on outside click
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (countryDropdownRef.current && !countryDropdownRef.current.contains(e.target)) {
+                setShowCountryDropdown(false);
+            }
+            if (cityDropdownRef.current && !cityDropdownRef.current.contains(e.target)) {
+                setShowCityDropdown(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    // Build final location string
+    const getLocationQuery = () => {
+        if (showCustomInput && customCity.trim()) {
+            return `${customCity.trim()}, ${selectedCountry}`;
+        }
+        if (selectedCity) {
+            return `${selectedCity}, ${selectedCountry}`;
+        }
+        return selectedCountry;
+    };
 
     const observer = useRef();
     const lastJobElementRef = useCallback(node => {
@@ -59,16 +95,11 @@ const GlobalJobSearch = () => {
             return;
         }
 
-        if (!user.isVerified) {
-            dispatch(openModal("verify"));
-            toast.error("Please verify your email to use global search.");
-            return;
-        }
-
         try {
             setLoading(true);
+            const locationQuery = getLocationQuery();
             const res = await axios.post(`${JOB_API_END_POINT}/external/search`,
-                { keyword, location, maxResults: 12 },
+                { keyword, location: locationQuery, maxResults: 12 },
                 { withCredentials: true }
             );
 
@@ -77,7 +108,7 @@ const GlobalJobSearch = () => {
                 const updatedList = isNewSearch ? newJobs : [...externalJobs, ...newJobs];
 
                 dispatch(setExternalJobs(updatedList));
-                await saveExternalJobs(newJobs); // Cache new results
+                await saveExternalJobs(newJobs);
 
                 if (newJobs.length < 12) setHasMore(false);
                 if (isNewSearch) toast.success(`Found ${newJobs.length} new opportunities!`);
@@ -98,12 +129,6 @@ const GlobalJobSearch = () => {
             return;
         }
 
-        if (!user.isVerified) {
-            dispatch(openModal("verify"));
-            toast.error("Please verify your email to use AI matching.");
-            return;
-        }
-
         try {
             setMatchingLoading(true);
             toast.info("Grok AI is analyzing matches based on your resume profile...");
@@ -115,7 +140,7 @@ const GlobalJobSearch = () => {
 
             if (res.data.success) {
                 dispatch(setExternalJobs(res.data.jobs));
-                await saveExternalJobs(res.data.jobs); // Update cache with scores
+                await saveExternalJobs(res.data.jobs);
                 toast.success("AI Matching complete! Results ranked by relevance.");
             }
         } catch (error) {
@@ -165,7 +190,156 @@ const GlobalJobSearch = () => {
                     </div>
                 </div>
 
-                {/* Search Bar - Glassmorphism UI */}
+                {/* Country & City Selector */}
+                <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
+                    className='w-full p-4 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl shadow-lg mb-4'
+                >
+                    <div className='flex items-center gap-2 mb-3'>
+                        <Globe className='text-primary' size={16} />
+                        <span className='text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider'>Location Preferences</span>
+                    </div>
+                    <div className='flex flex-col md:flex-row items-stretch gap-3'>
+                        {/* Country Selector */}
+                        <div className='relative flex-1' ref={countryDropdownRef}>
+                            <button
+                                onClick={() => { setShowCountryDropdown(!showCountryDropdown); setShowCityDropdown(false); }}
+                                className='w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 hover:border-primary/50 transition-colors'
+                            >
+                                <div className='flex items-center gap-2'>
+                                    <Globe className='text-slate-400' size={16} />
+                                    <span className='font-bold text-sm text-slate-800 dark:text-white'>{selectedCountry}</span>
+                                </div>
+                                <ChevronDown className={`text-slate-400 transition-transform ${showCountryDropdown ? 'rotate-180' : ''}`} size={16} />
+                            </button>
+                            <AnimatePresence>
+                                {showCountryDropdown && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: -5, scale: 0.98 }}
+                                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                                        exit={{ opacity: 0, y: -5, scale: 0.98 }}
+                                        transition={{ duration: 0.15 }}
+                                        className='absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-2xl z-50 max-h-64 overflow-y-auto custom-scrollbar'
+                                    >
+                                        {countries.map((country) => (
+                                            <button
+                                                key={country}
+                                                onClick={() => {
+                                                    setSelectedCountry(country);
+                                                    setSelectedCity("");
+                                                    setShowCustomInput(false);
+                                                    setCustomCity("");
+                                                    setShowCountryDropdown(false);
+                                                }}
+                                                className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-colors hover:bg-primary/5 dark:hover:bg-primary/10 ${
+                                                    selectedCountry === country
+                                                        ? 'text-primary bg-primary/5 dark:bg-primary/10 font-bold'
+                                                        : 'text-slate-600 dark:text-slate-300'
+                                                }`}
+                                            >
+                                                {country}
+                                            </button>
+                                        ))}
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
+
+                        {/* City Selector */}
+                        <div className='relative flex-1' ref={cityDropdownRef}>
+                            {showCustomInput ? (
+                                <div className='flex items-center gap-2'>
+                                    <div className='relative flex-1'>
+                                        <Building2 className='absolute left-3 top-1/2 -translate-y-1/2 text-slate-400' size={16} />
+                                        <input
+                                            type='text'
+                                            placeholder='Type your city name...'
+                                            value={customCity}
+                                            onChange={(e) => setCustomCity(e.target.value)}
+                                            className='w-full pl-10 pr-4 py-3 rounded-xl border border-primary/30 dark:border-primary/50 bg-slate-50 dark:bg-slate-800/50 text-sm font-bold text-slate-800 dark:text-white placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-primary/20 transition-all'
+                                            autoFocus
+                                        />
+                                    </div>
+                                    <button
+                                        onClick={() => { setShowCustomInput(false); setCustomCity(""); }}
+                                        className='p-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-red-50 dark:hover:bg-red-500/10 text-slate-400 hover:text-red-500 transition-colors'
+                                    >
+                                        <X size={16} />
+                                    </button>
+                                </div>
+                            ) : (
+                                <button
+                                    onClick={() => { setShowCityDropdown(!showCityDropdown); setShowCountryDropdown(false); }}
+                                    className='w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 hover:border-primary/50 transition-colors'
+                                >
+                                    <div className='flex items-center gap-2'>
+                                        <MapPin className='text-slate-400' size={16} />
+                                        <span className={`font-bold text-sm ${selectedCity ? 'text-slate-800 dark:text-white' : 'text-slate-400'}`}>
+                                            {selectedCity || "All Cities"}
+                                        </span>
+                                    </div>
+                                    <ChevronDown className={`text-slate-400 transition-transform ${showCityDropdown ? 'rotate-180' : ''}`} size={16} />
+                                </button>
+                            )}
+                            <AnimatePresence>
+                                {showCityDropdown && !showCustomInput && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: -5, scale: 0.98 }}
+                                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                                        exit={{ opacity: 0, y: -5, scale: 0.98 }}
+                                        transition={{ duration: 0.15 }}
+                                        className='absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-2xl z-50 max-h-64 overflow-y-auto custom-scrollbar'
+                                    >
+                                        {/* All Cities option */}
+                                        <button
+                                            onClick={() => { setSelectedCity(""); setShowCityDropdown(false); }}
+                                            className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-colors hover:bg-primary/5 dark:hover:bg-primary/10 border-b border-slate-100 dark:border-slate-800 ${
+                                                !selectedCity ? 'text-primary bg-primary/5 font-bold' : 'text-slate-600 dark:text-slate-300'
+                                            }`}
+                                        >
+                                            🌐 All Cities in {selectedCountry}
+                                        </button>
+
+                                        {cities.map((city) => (
+                                            <button
+                                                key={city}
+                                                onClick={() => { setSelectedCity(city); setShowCityDropdown(false); }}
+                                                className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-colors hover:bg-primary/5 dark:hover:bg-primary/10 ${
+                                                    selectedCity === city
+                                                        ? 'text-primary bg-primary/5 dark:bg-primary/10 font-bold'
+                                                        : 'text-slate-600 dark:text-slate-300'
+                                                }`}
+                                            >
+                                                {city}
+                                            </button>
+                                        ))}
+
+                                        {/* Add Custom City */}
+                                        <button
+                                            onClick={() => { setShowCustomInput(true); setShowCityDropdown(false); }}
+                                            className='w-full text-left px-4 py-2.5 text-sm font-bold text-primary hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors border-t border-slate-100 dark:border-slate-800 flex items-center gap-2'
+                                        >
+                                            <Plus size={14} />
+                                            Add other city manually
+                                        </button>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
+
+                        {/* Location Preview Badge */}
+                        <div className='flex items-center px-4 py-2 rounded-xl bg-primary/5 dark:bg-primary/10 border border-primary/10 dark:border-primary/20'>
+                            <MapPin className='text-primary shrink-0' size={14} />
+                            <span className='ml-2 text-xs font-bold text-primary truncate max-w-[200px]'>
+                                {getLocationQuery()}
+                            </span>
+                        </div>
+                    </div>
+                </motion.div>
+
+                {/* Search Bar */}
                 <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -180,17 +354,6 @@ const GlobalJobSearch = () => {
                             value={keyword}
                             onChange={(e) => setKeyword(e.target.value)}
                             onKeyDown={(e) => e.key === 'Enter' && performSearch(true)}
-                        />
-                    </div>
-                    <div className='hidden md:block w-px h-8 bg-slate-100 dark:bg-slate-800' />
-                    <div className='flex-1 flex items-center gap-3 px-6 py-4 w-full'>
-                        <MapPin className='text-primary' size={20} />
-                        <input
-                            type="text"
-                            placeholder="Location (e.g. London, Remote...)"
-                            className='w-full bg-transparent border-none outline-none font-bold text-slate-800 dark:text-white placeholder:text-slate-400'
-                            value={location}
-                            onChange={(e) => setLocation(e.target.value)}
                         />
                     </div>
                     <Button

@@ -66,13 +66,7 @@ const AuthModal = () => {
                 toast.success(res.data.message);
             }
         } catch (error) {
-            if (error.response?.data?.notVerified) {
-                setSignupEmail(loginInput.email);
-                dispatch(setView("verify"));
-                toast.error("Please verify your email first.");
-            } else {
-                toast.error(error.response?.data?.message || "Login failed");
-            }
+            toast.error(error.response?.data?.message || "Login failed");
         } finally {
             dispatch(setLoading(false));
         }

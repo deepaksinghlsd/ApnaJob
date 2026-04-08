@@ -1,0 +1,61 @@
+{
+  "India": [
+    "Mumbai", "Delhi NCR", "Bangalore", "Hyderabad", "Chennai",
+    "Kolkata", "Pune", "Ahmedabad", "Jaipur", "Lucknow",
+    "Chandigarh", "Noida", "Gurgaon", "Indore", "Bhopal",
+    "Coimbatore", "Kochi", "Thiruvananthapuram", "Nagpur", "Visakhapatnam",
+    "Surat", "Vadodara", "Mangalore", "Mysore", "Dehradun"
+  ],
+  "United States": [
+    "New York", "San Francisco", "Los Angeles", "Chicago", "Seattle",
+    "Austin", "Boston", "Denver", "Atlanta", "Dallas",
+    "Houston", "Miami", "Washington DC", "Philadelphia", "San Diego",
+    "Portland", "Minneapolis", "Raleigh", "Charlotte", "Nashville"
+  ],
+  "United Kingdom": [
+    "London", "Manchester", "Birmingham", "Leeds", "Bristol",
+    "Glasgow", "Edinburgh", "Liverpool", "Sheffield", "Cambridge",
+    "Oxford", "Nottingham", "Cardiff", "Belfast", "Southampton"
+  ],
+  "Canada": [
+    "Toronto", "Vancouver", "Montreal", "Calgary", "Ottawa",
+    "Edmonton", "Winnipeg", "Quebec City", "Halifax", "Victoria"
+  ],
+  "Germany": [
+    "Berlin", "Munich", "Hamburg", "Frankfurt", "Stuttgart",
+    "Düsseldorf", "Cologne", "Dresden", "Leipzig", "Hannover"
+  ],
+  "Australia": [
+    "Sydney", "Melbourne", "Brisbane", "Perth", "Adelaide",
+    "Canberra", "Gold Coast", "Hobart", "Darwin", "Newcastle"
+  ],
+  "Singapore": [
+    "Singapore"
+  ],
+  "UAE": [
+    "Dubai", "Abu Dhabi", "Sharjah", "Ajman", "Ras Al Khaimah"
+  ],
+  "Japan": [
+    "Tokyo", "Osaka", "Yokohama", "Nagoya", "Kyoto",
+    "Fukuoka", "Sapporo", "Kobe", "Sendai", "Hiroshima"
+  ],
+  "Netherlands": [
+    "Amsterdam", "Rotterdam", "The Hague", "Utrecht", "Eindhoven"
+  ],
+  "France": [
+    "Paris", "Lyon", "Marseille", "Toulouse", "Nice",
+    "Nantes", "Bordeaux", "Strasbourg", "Lille", "Rennes"
+  ],
+  "Ireland": [
+    "Dublin", "Cork", "Galway", "Limerick", "Waterford"
+  ],
+  "Sweden": [
+    "Stockholm", "Gothenburg", "Malmö", "Uppsala", "Linköping"
+  ],
+  "Switzerland": [
+    "Zurich", "Geneva", "Basel", "Bern", "Lausanne"
+  ],
+  "Remote": [
+    "Remote / Worldwide"
+  ]
+}
