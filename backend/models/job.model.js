@@ -42,6 +42,10 @@ const jobSchema = new mongoose.Schema({
         ref: 'User',
         required: true
     },
+    summary: {
+        type: String,
+        default: ""
+    },
     applications: [
         {
             type: mongoose.Schema.Types.ObjectId,

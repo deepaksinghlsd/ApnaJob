@@ -14,17 +14,17 @@ const Footer = () => {
           <div className="space-y-6">
             <Link to="/">
               <h2 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white">
-                Apna<span className="text-primary">Job</span>
+                Career<span className="text-primary">Spriter</span>
               </h2>
             </Link>
             <p className="text-slate-500 dark:text-slate-400 font-medium leading-relaxed">
               Empowering careers through AI-driven intelligence. Find your next opportunity with precision and speed.
             </p>
             <div className="flex items-center gap-4">
-              <SocialIcon icon={<Linkedin size={18} />} href="https://linkedin.com" />
-              <SocialIcon icon={<Twitter size={18} />} href="https://twitter.com" />
-              <SocialIcon icon={<Instagram size={18} />} href="https://instagram.com" />
-              <SocialIcon icon={<Github size={18} />} href="https://github.com" />
+              <SocialIcon icon={<Linkedin size={18} />} href="https://www.linkedin.com/in/deepak-kumar-singh-486994215" />
+              {/* <SocialIcon icon={<Twitter size={18} />} href="https://twitter.com" /> */}
+              <SocialIcon icon={<Instagram size={18} />} href="https://www.instagram.com/deepaksingh_lsd  " />
+              <SocialIcon icon={<Github size={18} />} href="https://github.com/deepaksinghlsd/deepaksinghlsd" />
             </div>
           </div>
 
@@ -56,7 +56,7 @@ const Footer = () => {
             <ul className="space-y-4 font-bold text-slate-500 dark:text-slate-400">
               <li className="flex items-center gap-3">
                 <Mail size={16} className="text-primary" />
-                <span>support@apnajob.com</span>
+                <span>support@CareerSpriter.com</span>
               </li>
               <li className="text-xs italic mt-4 opacity-70">
                 Facing issues? Our AI support team is available 24/7 to assist your career journey.
@@ -69,7 +69,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-slate-50 dark:border-slate-800 flex flex-col md:flex-row justify-between items-center gap-6">
           <p className="text-xs font-bold text-slate-400 dark:text-slate-500">
-            © {currentYear} ApnaJob. All rights reserved. Built with precision for the future of work.
+            © {currentYear} CareerSpriter. All rights reserved. Built with precision for the future of work.
           </p>
           <div className="flex items-center gap-6">
             <span className="flex items-center gap-2 text-[10px] font-black uppercase tracking-tighter text-slate-300 dark:text-slate-700">

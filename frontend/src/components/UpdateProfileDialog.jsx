@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '
 import { Label } from './ui/label'
 import { Input } from './ui/input'
 import { Button } from './ui/button'
-import { Loader2, Upload, X, Briefcase, User, Phone, Mail, FileText } from 'lucide-react'
+import { Loader2, Upload, X, Briefcase, User, Phone, Mail, FileText, Image as ImageIcon } from 'lucide-react'
 import { useDispatch, useSelector } from 'react-redux'
 import axios from 'axios'
 import { USER_API_END_POINT } from '@/utils/constant'
@@ -20,7 +20,8 @@ const UpdateProfileDialog = ({ open, setOpen }) => {
         phoneNumber: user?.phoneNumber || "",
         bio: user?.profile?.bio || "",
         skills: user?.profile?.skills?.join(", ") || "",
-        file: null
+        profilePhoto: null,
+        resume: null
     });
     const dispatch = useDispatch();
 
@@ -28,9 +29,9 @@ const UpdateProfileDialog = ({ open, setOpen }) => {
         setInput({ ...input, [e.target.name]: e.target.value });
     }
 
-    const fileChangeHandler = (e) => {
+    const fileChangeHandler = (e, type) => {
         const file = e.target.files?.[0];
-        setInput({ ...input, file })
+        setInput({ ...input, [type]: file })
     }
 
     const submitHandler = async (e) => {
@@ -41,8 +42,11 @@ const UpdateProfileDialog = ({ open, setOpen }) => {
         formData.append("phoneNumber", input.phoneNumber);
         formData.append("bio", input.bio);
         formData.append("skills", input.skills);
-        if (input.file) {
-            formData.append("file", input.file);
+        if (input.profilePhoto) {
+            formData.append("profilePhoto", input.profilePhoto);
+        }
+        if (input.resume) {
+            formData.append("resume", input.resume);
         }
         try {
             setLoading(true);
@@ -152,36 +156,57 @@ const UpdateProfileDialog = ({ open, setOpen }) => {
                         </div>
                     </div>
 
-                    {/* Resume Upload */}
-                    <div className="space-y-2">
-                        <Label className="text-xs font-black uppercase tracking-widest text-slate-400 ml-1">Upload Updated Resume (PDF)</Label>
-                        <div className="relative group">
-                            <input
-                                type="file"
-                                id="file"
-                                accept="application/pdf"
-                                onChange={fileChangeHandler}
-                                className="hidden"
-                            />
-                            <label 
-                                htmlFor="file" 
-                                className="flex items-center justify-between px-6 h-20 bg-primary/5 border-2 border-dashed border-primary/20 rounded-3xl cursor-pointer hover:bg-primary/10 hover:border-primary/40 transition-all group"
-                            >
-                                <div className="flex items-center gap-4">
-                                    <div className="p-3 bg-primary/10 rounded-2xl text-primary group-hover:scale-110 transition-transform">
-                                        <FileText size={20} />
-                                    </div>
-                                    <div className="text-left">
-                                        <p className="text-sm font-black text-slate-700 dark:text-slate-200">
-                                            {input.file ? input.file.name : "Select Resume File"}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {/* Profile Photo */}
+                        <div className="space-y-2">
+                            <Label className="text-xs font-black uppercase tracking-widest text-slate-400 ml-1">Profile Photo</Label>
+                            <div className="relative group">
+                                <input
+                                    type="file"
+                                    id="profilePhoto"
+                                    accept="image/*"
+                                    onChange={(e) => fileChangeHandler(e, 'profilePhoto')}
+                                    className="hidden"
+                                />
+                                <label 
+                                    htmlFor="profilePhoto" 
+                                    className="flex items-center justify-between px-4 h-14 bg-primary/5 border-2 border-dashed border-primary/20 rounded-2xl cursor-pointer hover:bg-primary/10 hover:border-primary/40 transition-all group"
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <ImageIcon size={16} className="text-primary" />
+                                        <p className="text-xs font-bold text-slate-700 dark:text-slate-200 truncate max-w-[120px]">
+                                            {input.profilePhoto ? input.profilePhoto.name : "Change Photo"}
                                         </p>
-                                        <p className="text-[10px] uppercase tracking-tighter text-slate-400 font-bold">Max size: 5MB • PDF Only</p>
                                     </div>
-                                </div>
-                                <div className="p-2 bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-100 dark:border-slate-700">
-                                    <Upload size={16} className="text-primary" />
-                                </div>
-                            </label>
+                                    <Upload size={14} className="text-primary" />
+                                </label>
+                            </div>
+                        </div>
+
+                        {/* Resume Upload */}
+                        <div className="space-y-2">
+                            <Label className="text-xs font-black uppercase tracking-widest text-slate-400 ml-1">Resume (PDF)</Label>
+                            <div className="relative group">
+                                <input
+                                    type="file"
+                                    id="resume"
+                                    accept="application/pdf"
+                                    onChange={(e) => fileChangeHandler(e, 'resume')}
+                                    className="hidden"
+                                />
+                                <label 
+                                    htmlFor="resume" 
+                                    className="flex items-center justify-between px-4 h-14 bg-primary/5 border-2 border-dashed border-primary/20 rounded-2xl cursor-pointer hover:bg-primary/10 hover:border-primary/40 transition-all group"
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <FileText size={16} className="text-primary" />
+                                        <p className="text-xs font-bold text-slate-700 dark:text-slate-200 truncate max-w-[120px]">
+                                            {input.resume ? input.resume.name : "Update Resume"}
+                                        </p>
+                                    </div>
+                                    <Upload size={14} className="text-primary" />
+                                </label>
+                            </div>
                         </div>
                     </div>
 

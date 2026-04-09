@@ -28,6 +28,7 @@ const userSchema = new mongoose.Schema({
         skills:[{type:String}],
         resume:{type:String}, // URL to resume file
         resumeOriginalName:{type:String},
+        summary:{type:String, default:""}, // AI-generated profile summary
         company:{type:mongoose.Schema.Types.ObjectId, ref:'Company'}, 
         profilePhoto:{
             type:String,
@@ -43,6 +44,10 @@ const userSchema = new mongoose.Schema({
     },
     verificationOtpExpire: {
         type: Date
+    },
+    autoApplyEnabled: {
+        type: Boolean,
+        default: false
     },
     resetPasswordToken: {type: String},
     resetPasswordExpire: {type: Date}

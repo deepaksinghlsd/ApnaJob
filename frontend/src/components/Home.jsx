@@ -41,7 +41,7 @@ const Home = () => {
                     </div>
 
                     {/* Features/Discovery */}
-                    <CategoryCarousel />
+                    {/* <CategoryCarousel /> */}
 
                     {/* Benefit-led CTA section */}
                     <GlobalSearchCTA />

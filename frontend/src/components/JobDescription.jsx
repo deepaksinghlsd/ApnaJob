@@ -20,7 +20,9 @@ import {
     Bookmark,
     ArrowLeft,
     Clock,
-    CheckCircle2
+    CheckCircle2,
+    Sparkles,
+    Loader2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { openModal } from '@/redux/authModalSlice';
@@ -242,6 +244,28 @@ const JobDescription = () => {
                                         ))}
                                     </div>
                                 </div>
+                            )}
+
+                            {/* AI Job Summary Section */}
+                            {singleJob?.summary && (
+                                <motion.div 
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className='mt-10 p-6 rounded-3xl bg-secondary/5 border border-secondary/10 relative overflow-hidden group'
+                                >
+                                    <div className='absolute -right-4 -top-4 text-secondary/5 group-hover:text-secondary/10 transition-colors'>
+                                        <Sparkles size={120} />
+                                    </div>
+                                    <div className='relative z-10'>
+                                        <div className='flex items-center gap-2 mb-3'>
+                                            <Sparkles size={16} className="text-secondary" />
+                                            <h3 className='text-[10px] font-black uppercase tracking-[0.2em] text-secondary'>AI-Generated Role Snapshot</h3>
+                                        </div>
+                                        <p className='text-sm text-slate-700 dark:text-slate-200 font-bold leading-relaxed italic'>
+                                            "{singleJob?.summary}"
+                                        </p>
+                                    </div>
+                                </motion.div>
                             )}
                         </motion.div>
                     </div>

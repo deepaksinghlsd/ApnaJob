@@ -1,6 +1,6 @@
 FROM node:20-alpine 
 
-WORKDIR /Apnajob 
+WORKDIR /CareerSpriter 
 
 COPY package*.json ./
 

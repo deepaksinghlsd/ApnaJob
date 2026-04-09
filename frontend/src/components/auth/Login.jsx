@@ -10,14 +10,13 @@ import { USER_API_END_POINT } from '@/utils/constant';
 import { toast } from 'sonner';
 import { useDispatch, useSelector } from 'react-redux';
 import { setLoading, setUser } from '@/redux/authSlice';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Eye, EyeOff } from 'lucide-react';
 
 const Login = () => {
-    const [input, setInput] = useState({
-        email: "",
         password: "",
         role: "",
     });
+    const [showPassword, setShowPassword] = useState(false);
     const { loading, user } = useSelector(store => store.auth);
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -78,13 +77,23 @@ const Login = () => {
 
                     <div className="my-3">
                         <Label>Password</Label>
-                        <Input
-                            type="password"
-                            value={input.password}
-                            name="password"
-                            onChange={changeEventHandler}
-                            placeholder="Enter password"
-                        />
+                        <div className="relative">
+                            <Input
+                                type={showPassword ? "text" : "password"}
+                                value={input.password}
+                                name="password"
+                                onChange={changeEventHandler}
+                                placeholder="Enter password"
+                                className="pr-10"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-3 top-3 text-slate-400 hover:text-slate-600"
+                            >
+                                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                            </button>
+                        </div>
                     </div>
 
                     <div className="flex items-center justify-between my-4">

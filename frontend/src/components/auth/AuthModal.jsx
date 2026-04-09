@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
 import { Label } from '../ui/label';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
-import { Loader2, Mail, Lock, User, Phone, Image as ImageIcon } from 'lucide-react';
+import { Loader2, Mail, Lock, User, Phone, Image as ImageIcon, Eye, EyeOff, FileText } from 'lucide-react';
 import axios from 'axios';
 import { USER_API_END_POINT } from '@/utils/constant';
 import { toast } from 'sonner';
@@ -20,6 +20,7 @@ const AuthModal = () => {
     const [signupEmail, setSignupEmail] = useState("");
     const [otp, setOtp] = useState("");
     const [timer, setTimer] = useState(0);
+    const [showPassword, setShowPassword] = useState(false);
 
     const [loginInput, setLoginInput] = useState({
         email: "",
@@ -33,7 +34,8 @@ const AuthModal = () => {
         phoneNumber: "",
         password: "",
         role: "student",
-        file: null,
+        profilePhoto: null,
+        resume: null,
     });
 
     const onOpenChange = (open) => {
@@ -48,8 +50,8 @@ const AuthModal = () => {
         setSignupInput({ ...signupInput, [e.target.name]: e.target.value });
     };
 
-    const signupFileHandler = (e) => {
-        setSignupInput({ ...signupInput, file: e.target.files?.[0] });
+    const signupFileHandler = (e, type) => {
+        setSignupInput({ ...signupInput, [type]: e.target.files?.[0] });
     };
 
     const loginSubmitHandler = async (e) => {
@@ -74,7 +76,7 @@ const AuthModal = () => {
 
     const signupSubmitHandler = async (e) => {
         e.preventDefault();
-        if (!signupInput.file) {
+        if (!signupInput.profilePhoto) {
             toast.error("Profile picture is required!");
             return;
         }
@@ -85,7 +87,10 @@ const AuthModal = () => {
         formData.append("phoneNumber", signupInput.phoneNumber);
         formData.append("password", signupInput.password);
         formData.append("role", signupInput.role);
-        formData.append("file", signupInput.file);
+        formData.append("profilePhoto", signupInput.profilePhoto);
+        if (signupInput.resume) {
+            formData.append("resume", signupInput.resume);
+        }
 
         try {
             dispatch(setLoading(true));
@@ -219,14 +224,21 @@ const AuthModal = () => {
                                             <div className="relative">
                                                 <Lock className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
                                                 <Input
-                                                    type="password"
+                                                    type={showPassword ? "text" : "password"}
                                                     name="password"
                                                     value={loginInput.password}
                                                     onChange={loginChangeHandler}
                                                     placeholder="••••••••"
-                                                    className="pl-10 dark:bg-slate-800 dark:border-slate-700 dark:text-white rounded-xl"
+                                                    className="pl-10 pr-10 dark:bg-slate-800 dark:border-slate-700 dark:text-white rounded-xl"
                                                     required
                                                 />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setShowPassword(!showPassword)}
+                                                    className="absolute right-3 top-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                                                >
+                                                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                                                </button>
                                             </div>
                                         </div>
 
@@ -316,14 +328,21 @@ const AuthModal = () => {
                                             <div className="relative">
                                                 <Lock className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
                                                 <Input
-                                                    type="password"
+                                                    type={showPassword ? "text" : "password"}
                                                     name="password"
                                                     value={signupInput.password}
                                                     onChange={signupChangeHandler}
                                                     placeholder="••••••••"
-                                                    className="pl-10 dark:bg-slate-800 dark:border-slate-700 dark:text-white rounded-xl"
+                                                    className="pl-10 pr-10 dark:bg-slate-800 dark:border-slate-700 dark:text-white rounded-xl"
                                                     required
                                                 />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setShowPassword(!showPassword)}
+                                                    className="absolute right-3 top-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                                                >
+                                                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                                                </button>
                                             </div>
                                         </div>
 
@@ -347,16 +366,31 @@ const AuthModal = () => {
                                             </div>
                                         </div>
 
-                                        <div className="space-y-2">
-                                            <Label className="dark:text-slate-300">Profile Photo</Label>
-                                            <div className="relative">
-                                                <ImageIcon className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
-                                                <Input
-                                                    type="file"
-                                                    accept="image/*"
-                                                    onChange={signupFileHandler}
-                                                    className="pl-10 dark:bg-slate-800 dark:border-slate-700 dark:text-white rounded-xl cursor-pointer"
-                                                />
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div className="space-y-2">
+                                                <Label className="dark:text-slate-300">Profile Photo</Label>
+                                                <div className="relative">
+                                                    <ImageIcon className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                                                    <Input
+                                                        type="file"
+                                                        accept="image/*"
+                                                        onChange={(e) => signupFileHandler(e, 'profilePhoto')}
+                                                        className="pl-10 dark:bg-slate-800 dark:border-slate-700 dark:text-white rounded-xl cursor-pointer text-xs"
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <Label className="dark:text-slate-300">Resume (PDF, Optional)</Label>
+                                                <div className="relative">
+                                                    <FileText className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                                                    <Input
+                                                        type="file"
+                                                        accept="application/pdf"
+                                                        onChange={(e) => signupFileHandler(e, 'resume')}
+                                                        className="pl-10 dark:bg-slate-800 dark:border-slate-700 dark:text-white rounded-xl cursor-pointer text-xs"
+                                                    />
+                                                </div>
                                             </div>
                                         </div>
 

@@ -1,6 +1,6 @@
 import { openDB } from 'idb';
 
-const DB_NAME = 'ApnaJobDB';
+const DB_NAME = 'CareerSpriterDB';
 const DB_VERSION = 1;
 
 /**

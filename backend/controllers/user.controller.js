@@ -5,6 +5,7 @@ import getDataUri from "../utils/datauri.js";
 import cloudinary from "../utils/cloudinary.js";
 import crypto from "crypto";
 import { sendOtpEmail } from "../utils/emailService.js";
+import { generateProfileSummary } from "../utils/gemini.js";
 
 export const register = async (req, res) => {
   try {
@@ -15,9 +16,26 @@ export const register = async (req, res) => {
         success: false,
       });
     }
-    const file = req.file;
-    const fileUri = getDataUri(file);
-    const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
+
+    const files = req.files;
+    let profilePhotoUrl = "";
+    let resumeUrl = "";
+    let resumeOriginalName = "";
+
+    if (files?.profilePhoto) {
+      const fileUri = getDataUri(files.profilePhoto[0]);
+      const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
+      profilePhotoUrl = cloudResponse.secure_url;
+    }
+
+    if (files?.resume) {
+      const fileUri = getDataUri(files.resume[0]);
+      const cloudResponse = await cloudinary.uploader.upload(fileUri.content, {
+        resource_type: "raw",
+      });
+      resumeUrl = cloudResponse.secure_url;
+      resumeOriginalName = files.resume[0].originalname;
+    }
 
     const user = await User.findOne({ email });
     if (user) {
@@ -32,6 +50,9 @@ export const register = async (req, res) => {
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const otpExpire = Date.now() + 10 * 60 * 1000; // 10 minutes
 
+    // Generate initial summary if resume or skills present (skills usually empty at reg)
+    const initialSummary = await generateProfileSummary([], "", role, resumeOriginalName);
+
     const newUser = await User.create({
       fullname,
       email,
@@ -39,7 +60,10 @@ export const register = async (req, res) => {
       password: hashedPassword,
       role,
       profile: {
-        profilePhoto: cloudResponse?.secure_url || "",
+        profilePhoto: profilePhotoUrl,
+        resume: resumeUrl,
+        resumeOriginalName: resumeOriginalName,
+        summary: initialSummary
       },
       isVerified: false,
       verificationOtp: otp,
@@ -222,11 +246,24 @@ export const logout = async (req, res) => {
 export const updateProfile = async (req, res) => {
   try {
     const { fullname, email, phoneNumber, bio, skills } = req.body;
+    const files = req.files;
 
-    const file = req.file;
-    // cloudinary ayega idhar
-    const fileUri = getDataUri(file);
-    const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
+    let profilePhotoUrl, resumeUrl, resumeOriginalName;
+
+    if (files?.profilePhoto) {
+      const fileUri = getDataUri(files.profilePhoto[0]);
+      const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
+      profilePhotoUrl = cloudResponse.secure_url;
+    }
+
+    if (files?.resume) {
+      const fileUri = getDataUri(files.resume[0]);
+      const cloudResponse = await cloudinary.uploader.upload(fileUri.content, {
+        resource_type: "raw",
+      });
+      resumeUrl = cloudResponse.secure_url;
+      resumeOriginalName = files.resume[0].originalname;
+    }
 
     let skillsArray;
     if (skills) {
@@ -248,9 +285,24 @@ export const updateProfile = async (req, res) => {
     if (bio) user.profile.bio = bio;
     if (skills) user.profile.skills = skillsArray;
 
-    if (cloudResponse) {
-      user.profile.resume = cloudResponse.secure_url; // save the cloudinary url
-      user.profile.resumeOriginalName = file.originalname; // Save the original file name
+    if (profilePhotoUrl) {
+      user.profile.profilePhoto = profilePhotoUrl;
+    }
+
+    if (resumeUrl) {
+      user.profile.resume = resumeUrl;
+      user.profile.resumeOriginalName = resumeOriginalName;
+    }
+
+    // AI summary generation
+    if (skills || bio || resumeUrl) {
+      const summary = await generateProfileSummary(
+        user.profile.skills,
+        user.profile.bio,
+        user.role,
+        user.profile.resumeOriginalName
+      );
+      if (summary) user.profile.summary = summary;
     }
 
     await user.save();
@@ -262,6 +314,7 @@ export const updateProfile = async (req, res) => {
       phoneNumber: user.phoneNumber,
       role: user.role,
       profile: user.profile,
+      autoApplyEnabled: user.autoApplyEnabled
     };
 
     return res.status(200).json({
@@ -270,9 +323,41 @@ export const updateProfile = async (req, res) => {
       success: true,
     });
   } catch (error) {
-    console.log(error);
+    console.log(error)
+    return res.status(500).json({
+      message: "Internal server error",
+      success: false
+    });
   }
 };
+
+export const toggleAutoApply = async (req, res) => {
+  try {
+    const userId = req.id;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found.",
+        success: false
+      });
+    }
+
+    user.autoApplyEnabled = !user.autoApplyEnabled;
+    await user.save();
+
+    return res.status(200).json({
+      message: `Auto-apply ${user.autoApplyEnabled ? 'enabled' : 'disabled'} successfully.`,
+      autoApplyEnabled: user.autoApplyEnabled,
+      success: true
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Internal server error",
+      success: false
+    });
+  }
+}
 
 export const forgotPassword = async (req, res) => {
     try {

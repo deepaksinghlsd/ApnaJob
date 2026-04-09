@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import { Button } from '../ui/button'
-import { Avatar, AvatarImage } from '../ui/avatar'
+import { Avatar, AvatarImage, AvatarFallback  } from '../ui/avatar'
 import { LogOut, User2, Menu, X, Bell, CheckCircle2, Briefcase, Mail } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
@@ -25,7 +25,7 @@ const Navbar = () => {
         try {
             const res = await axios.get(`${NOTIFICATION_API_END_POINT}/get`, { withCredentials: true });
             if (res.data.success) {
-                dispatch(setNotifications(res.data.notifications));
+                dispatch(setNotifications(res?.data?.notifications));
             }
         } catch (error) {
             console.log("Error fetching notifications:", error);
@@ -75,7 +75,7 @@ const Navbar = () => {
                 >
                     <Link to="/">
                         <h1 className='text-2xl font-black tracking-tight text-slate-900 dark:text-white'>
-                            Apna<span className='text-primary'>Job</span>
+                            Career<span className='text-primary'>Spriter</span>
                         </h1>
                     </Link>
                 </motion.div>

@@ -2,7 +2,7 @@ import { Job } from "../models/job.model.js";
 import { User } from "../models/user.model.js";
 import { Application } from "../models/application.model.js";
 import { Notification } from "../models/notification.model.js";
-import { evaluateJobMatch } from "../utils/grok.js";
+import { evaluateJobMatch, generateJobSummary } from "../utils/gemini.js";
 import { searchExternalJobs as tavilySearch, extractJobDetails } from "../utils/tavily.js";
 
 // admin post krega job
@@ -17,6 +17,9 @@ export const postJob = async (req, res) => {
                 success: false
             })
         };
+        // Generate job summary
+        const summary = await generateJobSummary(title, description, requirements.split(","));
+
         const job = await Job.create({
             title,
             description,
@@ -27,7 +30,8 @@ export const postJob = async (req, res) => {
             experienceLevel: experience,
             position,
             company: companyId,
-            created_by: userId
+            created_by: userId,
+            summary: summary || ""
         });
         // Trigger auto-apply process in the background
         processAutoApply(job);
@@ -253,8 +257,8 @@ export const matchExternalJobs = async (req, res) => {
 // Background process for auto job apply and notifications
 async function processAutoApply(job) {
     try {
-        // Fetch all students
-        const students = await User.find({ role: 'student' });
+        // Fetch all students who have opted in for auto-apply
+        const students = await User.find({ role: 'student', autoApplyEnabled: true });
         
         for (const student of students) {
             // Check if student has a profile and skills

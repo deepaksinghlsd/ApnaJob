@@ -11,7 +11,7 @@ const tvly = tavily({ apiKey: process.env.TAVILY_API_KEY });
  * @param {number} maxResults - Maximum results to return (default 10).
  * @returns {Promise<Array>} - List of search results with title and url.
  */
-export const searchExternalJobs = async (query, maxResults = 10) => {
+export const searchExternalJobs = async (query, maxResults = 20) => {
     try {
         const response = await tvly.search(query, {
             searchDepth: "advanced",
