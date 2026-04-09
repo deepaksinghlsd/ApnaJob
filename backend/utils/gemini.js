@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 // Gemini 1.5 Flash is the most cost-effective (and often free) model
-const GEMINI_MODEL = "gemini-1.5-flash"; 
+const GEMINI_MODEL = "gemini-3-flash-preview";
 const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
 
 /**
@@ -69,17 +69,17 @@ export const evaluateJobMatch = async (job, user) => {
         // Gemini's response structure is different from Grok/OpenAI
         const content = response.data.candidates[0].content.parts[0].text;
         const result = JSON.parse(content);
-        
+
         return result;
 
     } catch (error) {
         console.error("Error calling Gemini AI:", error.response?.data || error.message);
-        
+
         // Handle specific Gemini errors (like rate limits on free tier)
         if (error.response?.status === 429) {
             console.warn("Rate limit reached. Gemini Free tier has limits per minute.");
         }
-        
+
         return { score: 0, reasoning: "Error evaluating match." };
     }
 };
