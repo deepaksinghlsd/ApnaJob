@@ -6,6 +6,8 @@ import cloudinary from "../utils/cloudinary.js";
 import crypto from "crypto";
 import { sendOtpEmail } from "../utils/emailService.js";
 import { generateProfileSummary } from "../utils/gemini.js";
+import dotenv from "dotenv"
+dotenv.config()
 
 export const register = async (req, res) => {
   try {
@@ -391,8 +393,10 @@ export const forgotPassword = async (req, res) => {
 
         await user.save();
 
+        const baseurl = process.env.BASE_URL || "https://lsd.qzz.io"
+
         // In a real app, send an email here. For now, we'll return the token in response (for demo) or log it.
-        const resetUrl = `http://localhost:5173/reset-password/${resetToken}`;
+        const resetUrl = `${baseurl}/reset-password/${resetToken}`;
         
         console.log(`Password reset link: ${resetUrl}`);
 
