@@ -1,0 +1,39 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+
+          script: |
+            cd /home/ubuntu/CareerSpriter
+
+            git pull origin main
+
+            # Backend
+            cd backend
+            npm install
+            pm2 restart Spriter || pm2 start npm --name "Spriter" -- start
+
+            # Frontend
+            cd ../frontend
+            npm install
+            npm run build
+
+            sudo rm -rf /var/www/ui/build
+            sudo cp -r build /var/www/ui/
