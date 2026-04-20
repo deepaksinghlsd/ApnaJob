@@ -67,8 +67,9 @@ const HeroSection = () => {
                             />
                         </div>
                         <Button 
+                            disabled={!query.trim()}
                             onClick={searchJobHandler} 
-                            className="rounded-2xl h-14 px-8 bg-primary hover:bg-primary/90 text-white font-bold text-lg shadow-lg shadow-primary/30 active:scale-95 transition-all"
+                            className="rounded-2xl h-14 px-8 bg-primary hover:bg-primary/90 text-white font-bold text-lg shadow-lg shadow-primary/30 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             Find Jobs
                         </Button>

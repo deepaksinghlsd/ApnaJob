@@ -42,7 +42,7 @@ const appRouter = createBrowserRouter([
   },
   {
     path: "/profile",
-    element: <Layout><Profile /></Layout>
+    element: <ProtectedRoute adminOnly={false}><Layout><Profile /></Layout></ProtectedRoute>
   },
   {
     path: "/global-search",

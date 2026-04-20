@@ -357,9 +357,9 @@ const GlobalJobSearch = () => {
                         />
                     </div>
                     <Button
-                        disabled={loading}
+                        disabled={loading || !keyword.trim()}
                         onClick={() => performSearch(true)}
-                        className="w-full md:w-auto px-10 py-7 rounded-[1.5rem] bg-slate-900 dark:bg-primary text-white font-black uppercase tracking-widest transition-all active:scale-95"
+                        className="w-full md:w-auto px-10 py-7 rounded-[1.5rem] bg-slate-900 dark:bg-primary text-white font-black uppercase tracking-widest transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {loading ? <Loader2 className='animate-spin' /> : "Search Web"}
                     </Button>

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import { Button } from '../ui/button'
 import { Avatar, AvatarImage, AvatarFallback  } from '../ui/avatar'
-import { LogOut, User2, Menu, X, Bell, CheckCircle2, Briefcase, Mail } from 'lucide-react'
+import { LogOut, User2, Menu, X, Bell, CheckCircle2, Briefcase, Mail, Building2 } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import axios from 'axios'
@@ -312,6 +312,22 @@ const UserMenu = ({ user, logoutHandler }) => (
                             <span className='text-sm'>My Profile</span>
                         </Button>
                     </Link>
+                )}
+                {user && user.role === 'recruiter' && (
+                    <>
+                        <Link to="/admin/companies" className='w-full'>
+                            <Button variant="ghost" className="w-full justify-start gap-3 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-primary transition-all">
+                                <Building2 className="h-4 w-4" />
+                                <span className='text-sm'>Companies</span>
+                            </Button>
+                        </Link>
+                        <Link to="/admin/jobs" className='w-full'>
+                            <Button variant="ghost" className="w-full justify-start gap-3 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-primary transition-all">
+                                <Briefcase className="h-4 w-4" />
+                                <span className='text-sm'>Jobs</span>
+                            </Button>
+                        </Link>
+                    </>
                 )}
                 <Button variant="ghost" className="w-full justify-start gap-3 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-primary transition-all">
                     <Briefcase className="h-4 w-4" />
