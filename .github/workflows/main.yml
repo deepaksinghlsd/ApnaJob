@@ -25,15 +25,19 @@ jobs:
 
             git pull origin main
 
-            # Backend
+            # 🔥 Backend
             cd backend
             npm install
-            pm2 restart Spriter || pm2 start npm --name "Spriter" -- start
+            pm2 restart Spriter || pm2 start index.js --name "Spriter"
 
-            # Frontend
+            # 🔥 Frontend (Vite)
             cd ../frontend
             npm install
             npm run build
 
-            sudo rm -rf /var/www/ui/build
-            sudo cp -r build /var/www/ui/
+            # 🔥 Deploy to Nginx
+            sudo rm -rf /var/www/html/*
+            sudo cp -r dist/* /var/www/html/
+
+            # 🔥 Reload Nginx
+            sudo systemctl reload nginx
