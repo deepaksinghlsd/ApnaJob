@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4   # ✅ updated
 
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v0.1.6
@@ -21,7 +21,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
 
           script: |
-            cd /home/ubuntu/CareerSpriter
+            cd /home/ubuntu/ApnaJob   # ✅ FIXED PATH
 
             git pull origin main
 
