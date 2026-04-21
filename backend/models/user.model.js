@@ -7,8 +7,7 @@ const userSchema = new mongoose.Schema({
     },
     email: {
         type: String,
-        required: true,
-        unique: true
+        required: true
     },
     phoneNumber: {
         type: Number,
@@ -52,5 +51,7 @@ const userSchema = new mongoose.Schema({
     resetPasswordToken: {type: String},
     resetPasswordExpire: {type: Date}
 }, {timestamps:true});
+
+userSchema.index({ email: 1, role: 1 }, { unique: true });
 
 export const User = mongoose.model('User', userSchema);

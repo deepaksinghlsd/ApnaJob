@@ -36,18 +36,15 @@ const Signup = () => {
   const submitHandler = async (e) => {
     e.preventDefault();
 
-    if (!input.profilePhoto) {
-      toast.error('Profile picture is required!');
-      return;
-    }
-
     const formData = new FormData();
     formData.append('fullname', input.fullname);
     formData.append('email', input.email);
     formData.append('phoneNumber', input.phoneNumber);
     formData.append('password', input.password);
     formData.append('role', input.role);
-    formData.append('profilePhoto', input.profilePhoto);
+    if (input.profilePhoto) {
+      formData.append('profilePhoto', input.profilePhoto);
+    }
     if (input.resume) {
       formData.append('resume', input.resume);
     }
@@ -132,7 +129,7 @@ const Signup = () => {
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-xs font-bold text-slate-500 uppercase">Profile Photo</Label>
+                 <Label className="text-xs font-bold text-slate-500 uppercase">Profile Photo (Opt)</Label>
                 <Input accept="image/*" type="file" onChange={(e) => changeFileHandler(e, 'profilePhoto')} className="cursor-pointer text-xs" />
               </div>
               <div className="space-y-2">

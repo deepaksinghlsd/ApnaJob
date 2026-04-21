@@ -3,6 +3,7 @@ import Navbar from '../shared/Navbar';
 import { Label } from '../ui/label';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
+import { RadioGroup } from '../ui/radio-group';
 import { Loader2, Mail, ArrowLeft } from 'lucide-react';
 import axios from 'axios';
 import { USER_API_END_POINT } from '@/utils/constant';
@@ -12,6 +13,7 @@ import { motion } from 'framer-motion';
 
 const ForgotPassword = () => {
     const [email, setEmail] = useState("");
+    const [role, setRole] = useState("student");
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
@@ -19,7 +21,7 @@ const ForgotPassword = () => {
         e.preventDefault();
         try {
             setLoading(true);
-            const res = await axios.post(`${USER_API_END_POINT}/forgot-password`, { email }, {
+            const res = await axios.post(`${USER_API_END_POINT}/forgot-password`, { email, role }, {
                 headers: { 'Content-Type': 'application/json' },
                 withCredentials: true,
             });
@@ -67,6 +69,33 @@ const ForgotPassword = () => {
                                     required
                                 />
                             </div>
+                        </div>
+
+                        <div className="flex items-center justify-between my-4">
+                            <RadioGroup className="flex items-center gap-4">
+                                <div className="flex items-center space-x-2">
+                                    <Input
+                                        type="radio"
+                                        name="role"
+                                        value="student"
+                                        checked={role === 'student'}
+                                        onChange={(e) => setRole(e.target.value)}
+                                        className="cursor-pointer"
+                                    />
+                                    <Label className="dark:text-slate-300">Student</Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <Input
+                                        type="radio"
+                                        name="role"
+                                        value="recruiter"
+                                        checked={role === 'recruiter'}
+                                        onChange={(e) => setRole(e.target.value)}
+                                        className="cursor-pointer"
+                                    />
+                                    <Label className="dark:text-slate-300">Recruiter</Label>
+                                </div>
+                            </RadioGroup>
                         </div>
 
                         <Button type="submit" className="w-full rounded-xl py-6 font-bold text-md shadow-lg shadow-primary/20" disabled={loading}>
