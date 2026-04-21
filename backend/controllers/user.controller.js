@@ -39,10 +39,10 @@ export const register = async (req, res) => {
       resumeOriginalName = files.resume[0].originalname;
     }
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email, role });
     if (user) {
       return res.status(400).json({
-        message: "User already exist with this email.",
+        message: "User already exist with this email and role.",
         success: false,
       });
     }
@@ -91,16 +91,17 @@ export const register = async (req, res) => {
 // Verify OTP for account activation
 export const verifyOtp = async (req, res) => {
     try {
-        const { email, otp } = req.body;
-        if (!email || !otp) {
+        const { email, otp, role } = req.body;
+        if (!email || !otp || !role) {
             return res.status(400).json({
-                message: "Email and OTP are required.",
+                message: "Email, OTP and Role are required.",
                 success: false
             });
         }
 
         const user = await User.findOne({ 
             email,
+            role,
             verificationOtp: otp,
             verificationOtpExpire: { $gt: Date.now() }
         });
@@ -133,8 +134,14 @@ export const verifyOtp = async (req, res) => {
 // Resend OTP
 export const resendOtp = async (req, res) => {
     try {
-        const { email } = req.body;
-        const user = await User.findOne({ email });
+        const { email, role } = req.body;
+        if (!email || !role) {
+            return res.status(400).json({
+                message: "Email and Role are required.",
+                success: false
+            });
+        }
+        const user = await User.findOne({ email, role });
 
         if (!user) {
             return res.status(404).json({
@@ -181,7 +188,7 @@ export const login = async (req, res) => {
         success: false,
       });
     }
-    let user = await User.findOne({ email });
+    let user = await User.findOne({ email, role });
     if (!user) {
       return res.status(400).json({
         message: "Incorrect email or password.",
@@ -363,15 +370,15 @@ export const toggleAutoApply = async (req, res) => {
 
 export const forgotPassword = async (req, res) => {
     try {
-        const { email } = req.body;
-        if (!email) {
+        const { email, role } = req.body;
+        if (!email || !role) {
             return res.status(400).json({
-                message: "Email is required.",
+                message: "Email and Role are required.",
                 success: false
             });
         }
 
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email, role });
         if (!user) {
             return res.status(404).json({
                 message: "User not found with this email.",

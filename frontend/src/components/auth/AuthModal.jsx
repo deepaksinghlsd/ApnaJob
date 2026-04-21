@@ -76,10 +76,6 @@ const AuthModal = () => {
 
     const signupSubmitHandler = async (e) => {
         e.preventDefault();
-        if (!signupInput.profilePhoto) {
-            toast.error("Profile picture is required!");
-            return;
-        }
 
         const formData = new FormData();
         formData.append("fullname", signupInput.fullname);
@@ -87,7 +83,9 @@ const AuthModal = () => {
         formData.append("phoneNumber", signupInput.phoneNumber);
         formData.append("password", signupInput.password);
         formData.append("role", signupInput.role);
-        formData.append("profilePhoto", signupInput.profilePhoto);
+        if (signupInput.profilePhoto) {
+            formData.append("profilePhoto", signupInput.profilePhoto);
+        }
         if (signupInput.resume) {
             formData.append("resume", signupInput.resume);
         }
@@ -116,7 +114,8 @@ const AuthModal = () => {
             dispatch(setLoading(true));
             const res = await axios.post(`${USER_API_END_POINT}/verify-otp`, { 
                 email: signupEmail, 
-                otp: otp 
+                otp: otp,
+                role: signupInput.role
             });
             if (res.data.success) {
                 toast.success(res.data.message);
@@ -132,7 +131,10 @@ const AuthModal = () => {
 
     const resendOtpHandler = async () => {
         try {
-            const res = await axios.post(`${USER_API_END_POINT}/resend-otp`, { email: signupEmail });
+            const res = await axios.post(`${USER_API_END_POINT}/resend-otp`, { 
+                email: signupEmail,
+                role: signupInput.role
+            });
             if (res.data.success) {
                 toast.success(res.data.message);
                 setTimer(60);
@@ -368,7 +370,7 @@ const AuthModal = () => {
 
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <div className="space-y-2">
-                                                <Label className="dark:text-slate-300">Profile Photo</Label>
+                                                <Label className="dark:text-slate-300">Profile Photo(opt) </Label>
                                                 <div className="relative">
                                                     <ImageIcon className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
                                                     <Input

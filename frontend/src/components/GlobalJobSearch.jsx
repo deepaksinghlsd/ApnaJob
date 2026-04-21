@@ -27,7 +27,7 @@ const GlobalJobSearch = () => {
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
 
-    const { externalJobs = [] } = useSelector(store => store.job);
+    const { externalJobs = [], searchedQuery } = useSelector(store => store.job);
     const { user } = useSelector(store => store.auth);
     const dispatch = useDispatch();
 
@@ -36,6 +36,14 @@ const GlobalJobSearch = () => {
 
     const countries = Object.keys(countryCitiesData);
     const cities = countryCitiesData[selectedCountry] || [];
+
+    // Auto-trigger search if redirected from Home with a query
+    useEffect(() => {
+        if (searchedQuery) {
+            setKeyword(searchedQuery);
+            performSearch(true, searchedQuery);
+        }
+    }, [searchedQuery]);
 
     // Close dropdowns on outside click
     useEffect(() => {
@@ -86,20 +94,15 @@ const GlobalJobSearch = () => {
         loadCache();
     }, [dispatch]);
 
-    const performSearch = async (isNewSearch = false) => {
-        if (!keyword.trim()) return;
-
-        if (!user) {
-            dispatch(openModal("signup"));
-            toast.error("Please login to search the entire web.");
-            return;
-        }
+    const performSearch = async (isNewSearch = false, overrideKeyword = null) => {
+        const searchKeyword = overrideKeyword || keyword;
+        if (!searchKeyword.trim()) return;
 
         try {
             setLoading(true);
             const locationQuery = getLocationQuery();
             const res = await axios.post(`${JOB_API_END_POINT}/external/search`,
-                { keyword, location: locationQuery, maxResults: 12 },
+                { keyword: searchKeyword, location: locationQuery, maxResults: 12 },
                 { withCredentials: true }
             );
 

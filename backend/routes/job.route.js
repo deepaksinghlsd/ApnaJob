@@ -19,7 +19,7 @@ router.route("/getadminjobs").get(isAuthenticated, getAdminJobs);
 router.route("/get/:id").get(getJobById);
 
 // External Job Search (Tavily)
-router.route("/external/search").post(isAuthenticated, searchExternalJobs);
+router.route("/external/search").post(searchExternalJobs);
 router.route("/external/match").post(isAuthenticated, matchExternalJobs);
 
 export default router;
